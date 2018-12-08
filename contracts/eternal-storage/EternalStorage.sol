@@ -3,8 +3,7 @@ pragma solidity 0.4.24;
 
 /**
  * @title EternalStorage
- * @dev This contract holds all the necessary state variables to carry out
- * the storage of any contract.
+ * @dev This contract holds all the necessary state variables for contract state storage.
  */
 contract EternalStorage {
 
