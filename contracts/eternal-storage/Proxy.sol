@@ -19,7 +19,7 @@ contract Proxy {
     */
     // solhint-disable no-complex-fallback, no-inline-assembly
     function() external {
-        address _impl = _implementation();
+        address _impl = implementation();
         require(_impl != address(0));
 
         assembly {

@@ -20,20 +20,16 @@ contract UpgradeableProxy is Proxy, VersionStorage {
 
     /**
     * @dev Upgrades the implementation address
-    * @param version representing the version name of the new implementation to be set
-    * @param implementation representing the address of the new implementation to be set
+    * @param newImplementation representing the address of the new implementation to be set
     */
-    function _upgradeTo(uint256 version, address implementation) internal {
+    function _upgradeTo(address newImplementation) internal returns (bool) {
         if (newImplementation == address(0)) return false;
         if (_implementation == newImplementation) return false;
 
-        uint256 newVersion = _version + 1;
-        if (newVersion <= _version) return false;
-
-        _version = newVersion;
         _implementation = newImplementation;
+        _version = _version + 1;
 
-        emit Upgraded(newVersion, newImplementation);
+        emit Upgraded(_version, newImplementation);
         return true;
     }
 

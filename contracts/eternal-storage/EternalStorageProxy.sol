@@ -1,7 +1,8 @@
 pragma solidity 0.4.24;
 
+import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
 import "./EternalStorage.sol";
-import "./OwnedUpgradeableProxy.sol";
+import "./UpgradeableProxy.sol";
 import "./IEternalStorageProxy.sol";
 
 
@@ -11,7 +12,7 @@ import "./IEternalStorageProxy.sol";
  * Besides, it allows to upgrade the token's behaviour towards further implementations, and provides
  * authorization control functionalities
  */
-contract EternalStorageProxy is EternalStorage, OwnedUpgradeableProxy, IEternalStorageProxy {
+contract EternalStorageProxy is Ownable, EternalStorage, UpgradeableProxy, IEternalStorageProxy {
 
     bytes32 internal constant OWNER = keccak256("owner");
     bytes32 internal constant PROXY_STORAGE = keccak256("proxyStorage");
@@ -32,7 +33,6 @@ contract EternalStorageProxy is EternalStorage, OwnedUpgradeableProxy, IEternalS
         }
 
         _implementation = _implementationAddress;
-        _setOwner(msg.sender);
     }
 
 
@@ -44,16 +44,28 @@ contract EternalStorageProxy is EternalStorage, OwnedUpgradeableProxy, IEternalS
         return addressStorage[PROXY_STORAGE];
     }
 
-    /**
-     * @dev Allows the current owner to relinquish ownership.
-     */
-    function renounceOwnership() public onlyOwner {
-        emit OwnershipRenounced(getOwner());
-        transferOwnership(address(0));
-    }
-
     function _setProxyStorage(address _proxyStorage) private {
         addressStorage[PROXY_STORAGE] = _proxyStorage;
     }
 
+    /**
+    * @dev Allows owner to upgrade the current version of the proxy.
+    * @param implementation representing the address of the new implementation to be set.
+    */
+    function upgradeTo(address implementation) external onlyOwner returns (bool) {
+        return _upgradeTo(implementation);
+    }
+
+    /**
+    * @dev Allows owner to upgrade the current version of the proxy and call the new implementation
+    * to initialize whatever is needed through a low level call.
+    * @param implementation representing the address of the new implementation to be set.
+    * @param data represents the msg.data to bet sent in the low level call. This parameter may include the function
+    * signature of the implementation to be called with the needed payload
+    */
+    function upgradeToAndCall(address implementation, bytes data) payable external onlyOwner returns (bool) {
+        bool upgraded = _upgradeTo(implementation);
+        require(this.call.value(msg.value)(data));
+        return upgraded;
+    }
 }
