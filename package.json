@@ -1,0 +1,19 @@
+{
+  "name": "c4coin-contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c4coin/c4coin-contracts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/c4coin/c4coin-contracts/issues"
+  },
+  "homepage": "https://github.com/c4coin/c4coin-contracts#readme"
+}
