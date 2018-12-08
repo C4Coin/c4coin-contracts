@@ -64,8 +64,9 @@ contract EternalStorageProxy is Ownable, EternalStorage, UpgradeableProxy, IEter
     * signature of the implementation to be called with the needed payload
     */
     function upgradeToAndCall(address implementation, bytes data) payable external onlyOwner returns (bool) {
-        bool upgraded = _upgradeTo(implementation);
-        require(this.call.value(msg.value)(data));
-        return upgraded;
+        bool updateSuccess = _upgradeTo(implementation);
+        if (!updateSuccess) return false;
+        require(address(this).call.value(msg.value)(data));
+        return true;
     }
 }

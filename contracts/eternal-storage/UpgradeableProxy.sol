@@ -21,6 +21,7 @@ contract UpgradeableProxy is Proxy, VersionStorage {
     /**
     * @dev Upgrades the implementation address
     * @param newImplementation representing the address of the new implementation to be set
+    * @return bool on whether implementation was updated
     */
     function _upgradeTo(address newImplementation) internal returns (bool) {
         if (newImplementation == address(0)) return false;
