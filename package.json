@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/c4coin/c4coin-contracts/issues"
   },
-  "homepage": "https://github.com/c4coin/c4coin-contracts#readme"
+  "homepage": "https://github.com/c4coin/c4coin-contracts#readme",
+  "dependencies": {
+    "zos-lib": "^2.0.1"
+  }
 }
