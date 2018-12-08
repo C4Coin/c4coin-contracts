@@ -18,6 +18,7 @@
   "homepage": "https://github.com/c4coin/c4coin-contracts#readme",
   "dependencies": {
     "openzeppelin-solidity": "^2.0.0",
+    "tidbit-eth": "^0.1.2",
     "zos-lib": "^2.0.1"
   }
 }
