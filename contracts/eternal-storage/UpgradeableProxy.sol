@@ -24,10 +24,17 @@ contract UpgradeableProxy is Proxy, VersionStorage {
     * @param implementation representing the address of the new implementation to be set
     */
     function _upgradeTo(uint256 version, address implementation) internal {
-        require(_implementation != implementation);
-        _version = version;
-        _implementation = implementation;
-        Upgraded(version, implementation);
+        if (newImplementation == address(0)) return false;
+        if (_implementation == newImplementation) return false;
+
+        uint256 newVersion = _version + 1;
+        if (newVersion <= _version) return false;
+
+        _version = newVersion;
+        _implementation = newImplementation;
+
+        emit Upgraded(newVersion, newImplementation);
+        return true;
     }
 
 }

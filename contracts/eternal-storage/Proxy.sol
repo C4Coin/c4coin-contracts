@@ -17,21 +17,31 @@ contract Proxy {
     * @dev Fallback function allowing to perform a delegatecall to the given implementation.
     * This function will return whatever the implementation call returns
     */
-    function () payable public {
-        address _impl = implementation();
+    // solhint-disable no-complex-fallback, no-inline-assembly
+    function() external {
+        address _impl = _implementation();
         require(_impl != address(0));
 
         assembly {
-          let ptr := mload(0x40)
-          calldatacopy(ptr, 0, calldatasize)
-          let result := delegatecall(gas, _impl, ptr, calldatasize, 0, 0)
-          let size := returndatasize
-          returndatacopy(ptr, 0, size)
+            // Copy msg.data. We take full control of memory in this inline assembly
+            // block because it will not return to Solidity code. We overwrite the
+            // Solidity scratch pad at memory position 0
+            calldatacopy(0, 0, calldatasize)
 
-          switch result
-          case 0 { revert(ptr, size) }
-          default { return(ptr, size) }
+            // Call the implementation.
+            // out and outsize are 0 because we don't know the size yet
+            let result := delegatecall(gas, _impl, 0, calldatasize, 0, 0)
+
+            // Copy the returned data
+            returndatacopy(0, 0, returndatasize)
+
+            switch result
+            // delegatecall returns 0 on error
+            case 0 { revert(0, returndatasize) }
+            default { return(0, returndatasize) }
         }
+
     }
+    // solhint-enable no-complex-fallback, no-inline-assembly
 
 }
