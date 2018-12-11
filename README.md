@@ -7,15 +7,25 @@ An implementation of the c4coin protocol which implements an oraclized proof-of-
 
 ## Getting Started
 
-TODO
+TODO:
+
+* BurnableToken (make it interface based instead of impl based)
+* IProposal (project proposal)
+* IAdditionalityService
+* IValidatorSet / ReportingSet & BlockRewards Integration
+* IKeyManager
+* IBallotType
+* TCR interface for token registry & re-impl of previous code
+* Project white list / oracle white list , methodology white list
+* ENS/CONS & Standard setting body TCR
+* Deploy contracts
+* Tests
+* linter
+* CI
 
 ### Prerequisites
 
 node, npm, truffle, OpenZeppelin and ZOS
-
-### And coding style tests
-
-TODO: integrate Solhint or a solidity linter
 
 ## Built With
 
