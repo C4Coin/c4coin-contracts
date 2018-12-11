@@ -1,26 +1,40 @@
 pragma solidity 0.4.24;
 
-import "./BaselineEmissions.sol";
-import "./ProjectEmissions.sol";
-import "./LeakageEmissions.sol";
 import "../interfaces/IEmissionsReduction.sol";
 
-contract EmissionsReduction is BaselineEmissions, ProjectEmissions, LeakageEmissions, IEmissionsReduction {
 
-    function emissionsReduction(
-        bytes32 baselineData,
-        bytes32 projectData,
-        bytes32 leakageData)
-        public view returns (uint256) { // Can this be pure?
+contract EmissionsReduction is IEmissionsReduction {
 
-        uint256 baseline = baselineEmissions(baselineData);
-        uint256 project = projectEmissions(projectData);
-        uint256 leakage = leakageEmissions(leakageData);
+    IEmissions internal baseline;
+    IEmissions internal project;
+    IEmissions internal leakage;
 
-        require(p > l);
-        require(b > p + l);
+    constructor(
+        IEmissions _baseline,
+        IEmissions _project,
+        IEmissions _leakage) {
 
-        return b - p - l; // SafeMath here
+        baseline = _baseline;
+        project = _project;
+        leakage = _leakage;
+    }
+
+    function calculate(
+        bytes baselineData,
+        bytes projectData,
+        bytes leakageData)
+        external view returns (uint256) {
+
+        uint256 baselineEmissions = baseline.calculate(baselineData);
+        uint256 projectEmissions = project.calculate(projectData);
+        uint256 leakageEmissions = leakage.calculate(leakageData);
+
+        // TODO: Add FixedPointSafeMath.  Convert to int256?
+        require(projectEmissions > leakageEmissions);
+        require(baselineEmissions > projectEmissions + leakageEmissions);
+
+        return baselineEmissions - projectEmissions - leakageEmissions;
+
     }
 
 }

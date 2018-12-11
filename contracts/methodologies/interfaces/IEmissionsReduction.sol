@@ -1,10 +1,12 @@
-pragma solidity 0.4.24;
+pragma solidity ^0.4.24;
 
 
 interface IEmissionsReduction {
-    function emissionsReduction(
+
+    function calculate(
         bytes baselineData,
         bytes projectData,
         bytes leakageData)
-        public view returns (uint256);
+        external returns (uint256);
+
 }
