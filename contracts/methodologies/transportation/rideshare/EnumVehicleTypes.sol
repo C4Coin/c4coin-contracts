@@ -9,7 +9,8 @@ contract EnumVehicleTypes {
         HybridVehicle
     }
 
-    modifier isVehicleType(uint256 v) {
+    modifier isValidVehicleType(uint256 v) {
+        require(VehicleTypes(v) != VehicleTypes.Invalid);
         require(VehicleTypes(v) <= VehicleTypes.HybridVehicle);
         _;
     }
