@@ -1,9 +1,10 @@
 pragma solidity 0.4.24;
 
 import "./EnumVehicleTypes.sol";
+import "../abstract/EmissionsReduction.sol";
 
 
-contract RideshareEmissions_V1 is EnumVehicleTypes { // is BaseEmissions, IEmissions, Initializable
+contract RideshareEmissions_V1 is EnumVehicleTypes, EmissionsReduction { // is Initializable
 
     modifier isValidFossilFuelBaseline(bytes32 data) {
         // how do we verify?
@@ -20,12 +21,13 @@ contract RideshareEmissions_V1 is EnumVehicleTypes { // is BaseEmissions, IEmiss
         _;
     }
 
-    function _baselineFossilFuel(bytes32 data) private pure
+    function _baselineFossilFuel(
+        uint32 distance_km,
+        uint32 efficiency_liters_per_km,
+        uint32 emissions_factor_metric_tons_co2_per_liter) private pure
         isValidFossilFuelBaseline(data) returns (uint256) {
 
-        /* uint256 distance,
-        uint256 efficiency_liters_per_km,
-        uint256 emissions_factor_metric_tons_co2_per_liter */
+        // fixed point multiply...
 
         return 0;
     }
@@ -33,20 +35,32 @@ contract RideshareEmissions_V1 is EnumVehicleTypes { // is BaseEmissions, IEmiss
     function _baselineElectric(bytes32 data) private pure
         isValidElectricBaseline(data) returns (uint256) {
 
-        return 0;
+        // enum VehicleType PEV Electric
+        // Electric efficiency (kWh/km) = W_c
+        // Electricity generation GHG emission factor corresponding to project community area
+        //    adjusted for transmission loss, if available (tCO2e/kWh)  = GE_p
 
+        return 0;
     }
 
     function _baselineHybrid(bytes32 data) private pure
         isValidHybridBaseline(data) returns (uint256) {
 
-        return 0;
+        // enum VehicleType PHEV / Hybrid
+        // max(0, D_i-R_c)*V_c*EF_f + min(D_i, R_c)*W_c*GE_p
+        // R_c = vehicle all electric range (km)
+        // W_c = Vehicle electric efficiency for SOBT vehicle (kWh/km)
+        // GE_p = Electricity generation GHG emission factor corresponding to project community area
+        //       adjusted for transmission loss, if any (tCO2e/kWh)
+        // V_c = Vehicle fossil fuel efficiency for SOBT vehicle  (L/km)
+        // EF_f = GHG emission factor of fuel used by vehicle (tCO2e/liter)
 
+        return 0;
     }
 
-    function baseline(bytes32 data) public pure returns (uint256) {
+    function baselineEmissions(bytes data) public pure returns (uint256) {
 
-// uint256 vehicleType, isValidVehicleType(vehicleType)
+        // uint256 vehicleType, isValidVehicleType(vehicleType)
         VehicleTypes v = VehicleTypes(vehicleType);
         if (v == VehicleTypes.FossilFuelVehicle) {
             return _baselineFossilFuel(data);
@@ -60,41 +74,16 @@ contract RideshareEmissions_V1 is EnumVehicleTypes { // is BaseEmissions, IEmiss
 
     }
 
-    function project(bytes32 data) public pure returns (uint256) {
+    function projectEmissions(bytes data) public pure returns (uint256) {
         // uint256 vehicleType,
         return 0;
     }
 
-    function leakage(bytes32 data) public pure returns (uint256) {
-        // uint256 vehicleType, 
+    function leakageEmissions(bytes data) public pure returns (uint256) {
+        // uint256 vehicleType,
         return 0;
     }
 
-    // total baseline distance
-    // baseline emissions factor
-
-    // project emissions distance
-    // project emissions emissions factor
-
-
-    // enum VehicleType PEV Electric
-    // Electric efficiency (kWh/km) = W_c
-    // Electricity generation GHG emission factor corresponding to project community area
-    //    adjusted for transmission loss, if available (tCO2e/kWh)  = GE_p
-
-    // enum VehicleType FFV
-    //  Vehicle fossil fuel efficiency for SOBT vehicle  (L/km) = V_c
-    //  GHG emission factor of fuel used by vehicle  (tCO2e/L) } = EF_f
-
-
-    // enum VehicleType PHEV / Hybrid
-    // max(0, D_i-R_c)*V_c*EF_f + min(D_i, R_c)*W_c*GE_p
-    // R_c = vehicle all electric range (km)
-    // W_c = Vehicle electric efficiency for SOBT vehicle (kWh/km)
-    // GE_p = Electricity generation GHG emission factor corresponding to project community area
-    //       adjusted for transmission loss, if any (tCO2e/kWh)
-    // V_c = Vehicle fossil fuel efficiency for SOBT vehicle  (L/km)
-    // EF_f = GHG emission factor of fuel used by vehicle (tCO2e/liter)
 
     // baseline formula -- has a require(isAdditional())
     //    doees the person have a car?
