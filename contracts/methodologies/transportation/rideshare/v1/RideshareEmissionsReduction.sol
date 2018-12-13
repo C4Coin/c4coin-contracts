@@ -7,7 +7,7 @@ import "./EnumVehicleTypes.sol";
 contract RideshareEmissionsReduction is EmissionsReduction { // is Initializable, EternalStorage
 
     constructor() {
-
+        // Fook it mate...
     }
 
 }

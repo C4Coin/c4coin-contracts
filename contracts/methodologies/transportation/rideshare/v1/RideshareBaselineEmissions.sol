@@ -2,37 +2,29 @@ pragma solidity 0.4.24;
 
 import "../../../interfaces/IEmissions.sol";
 import "./EnumVehicleTypes.sol";
+import "../../../libraries/SignedSafeMath.sol";
 
 
 contract RideshareBaseline is EnumVehicleTypes, IEmissions {
 
-    modifier isValidFossilFuelBaseline(bytes data) {
-        // how do we verify?
-        _;
-    }
+    using SignedSafeMath for int64;
 
-    modifier isValidElectricBaseline(bytes data) {
-        // how do we verify?
-        _;
-    }
-
-    modifier isValidHybridBaseline(bytes data) {
-        // how do we verify?
-        _;
-    }
 
     function _baselineEmissionsFossilFuel(
-        uint32 distance_km,
-        uint32 efficiency_liters_per_km,
-        uint32 emissions_factor_metric_tons_co2_per_liter) private pure
-        returns (uint256) { // isValidFossilFuelBaseline(data)
+        int64 distanceKm,
+        int64 effLitersPerKm,
+        int64 emissionsFactMetricTonsCO2PerLiter
+        )
+        private pure returns (int64) { // isValidFossilFuelBaseline(data)
 
-        // fixed point multiply...
+        /* require(_isValidDistance(distanceKm));
+        require(_isValidEff(effLitersPerKm));
+        require(_isValidEmissionsFact(emissionsFactMetricTonsCO2PerLiter)); */
 
-        return 0;
+        return distanceKm.mul(effLitersPerKm).mul(emissionsFactMetricTonsCO2PerLiter);
     }
 
-    function _baselineEmissionsElectric(bytes32 data) private pure
+    /* function _baselineEmissionsElectric(bytes32 data) private pure
         returns (uint256) { // isValidElectricBaseline(data)
 
         // enum VehicleType PEV Electric
@@ -56,10 +48,19 @@ contract RideshareBaseline is EnumVehicleTypes, IEmissions {
         // EF_f = GHG emission factor of fuel used by vehicle (tCO2e/liter)
 
         return 0;
-    }
+    } */
 
-    function calculate(int32[64] data) external view returns (uint256) {
-        return 0;
+    function calculate(int64[16] data) external view returns (int64) {
+
+        int64 d;
+        int64 eff;
+        int64 emissions;
+
+        (d, eff, emissions) = (data[0], data[1], data[2]);
+
+        return _baselineEmissionsFossilFuel(d, eff, emissions);
+        
+        // return 0;
         // uint256 vehicleType,
         // require(isValidVehicleType(vehicleType));
         /* VehicleTypes v = VehicleTypes(vehicleType);

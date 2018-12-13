@@ -6,7 +6,7 @@ import "./EnumVehicleTypes.sol";
 
 contract RideshareProjectEmissions is IEmissions {
 
-    function projectEmissions(bytes data) public pure returns (uint256) {
+    function calculate(int64[16] data) external view returns (int64) {
         // uint256 vehicleType,
 
         // project emissions formula

@@ -5,16 +5,33 @@ import "../../../interfaces/IAdditionality.sol";
 
 contract RideshareAdditionality is IAdditionality {
 
-    function verify(bytes data) public pure returns (bool) {
+    enum AdditionalityParamTypes {
+        Invalid,
+        CommunityPoolHHI,
+        UserPoolFreq
+    }
 
-        // if HHI of zone shows a dominant market of 2 drivers
+    modifier isAdditionalityParamTypes(uint256 a) {
+        require(AdditionalityParamTypes(a) != AdditionalityParamTypes.Invalid);
+        require(AdditionalityParamTypes(a) <= AdditionalityParamTypes.UserPoolFreq);
+        _;
+    }
 
-        // AND
+    function verify(int64[16] data) external view returns (bool) {
 
-        // if this user's frequency of ridesharing with >2 people is greater
-        // then 35% then it is additional (must reset each season)
+        // If rideshare pool is dominant market in community then not additional.
+        int64 hhi = data[uint64(AdditionalityParamTypes.CommunityPoolHHI)];
 
-        return false;
+        if (hhi >= 2500) {
+            return false;
+        }
+
+        int64 userPoolFreq = data[uint256(AdditionalityParamTypes.UserPoolFreq)];
+        if (userPoolFreq <= 36) {
+            return false;
+        }
+
+        return true;
     }
 
 }
