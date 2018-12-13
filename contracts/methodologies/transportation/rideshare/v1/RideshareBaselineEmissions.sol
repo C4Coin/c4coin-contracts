@@ -1,32 +1,70 @@
 pragma solidity 0.4.24;
 
-import "../../../interfaces/IEmissions.sol";
 import "./EnumVehicleTypes.sol";
+import "../../../interfaces/IEmissions.sol";
 import "../../../libraries/SignedSafeMath.sol";
 
 
 contract RideshareBaseline is EnumVehicleTypes, IEmissions {
 
-    using SignedSafeMath for int64;
+    using SignedSafeMath for int32;
 
-
-    function _baselineEmissionsFossilFuel(
-        int64 distanceKm,
-        int64 effLitersPerKm,
-        int64 emissionsFactMetricTonsCO2PerLiter
-        )
-        private pure returns (int64) { // isValidFossilFuelBaseline(data)
-
-        /* require(_isValidDistance(distanceKm));
-        require(_isValidEff(effLitersPerKm));
-        require(_isValidEmissionsFact(emissionsFactMetricTonsCO2PerLiter)); */
-
-        return distanceKm.mul(effLitersPerKm).mul(emissionsFactMetricTonsCO2PerLiter);
+    enum BaselineParamTypes {
+        NumVehicleType,
+        DenVehicleType,
+        NumDistanceKm,
+        DenDistanceKm,
+        NumEffLitersPerKm,
+        DenEffLitersPerKm,
+        NumEmissionsFactMetricTonsCO2PerLiter,
+        DenEmissionsFactMetricTonsCO2PerLiter
     }
 
-    /* function _baselineEmissionsElectric(bytes32 data) private pure
-        returns (uint256) { // isValidElectricBaseline(data)
+    function calculate(int32[32] data) external view returns (int32 res) {
 
+        VehicleTypes v = VehicleTypes(data[uint(BaselineParamTypes.NumVehicleType)]);
+
+        if (v == VehicleTypes.FossilFuelVehicle) {
+            res = _baselineEmissionsFossilFuel(data);
+        } else if (v == VehicleTypes.ElectricVehicle) {
+            // res = _baselineEmissionsElectric(data);
+            return 0;
+        } else if (v == VehicleTypes.HybridVehicle) {
+            // res =  _baselineEmissionsHybrid(data);
+            return 0;
+        } else {
+            revert(); // TODO: Restructure this branching
+        }
+
+    }
+
+    function _baselineEmissionsFossilFuel(int32[32] data) private pure returns (int32) {
+
+        int32 numDistanceKm = data[uint(BaselineParamTypes.NumDistanceKm)];
+        require(numDistanceKm >= 0);
+        require(numDistanceKm <= 1000);
+
+        int32 denDistanceKm = data[uint(BaselineParamTypes.DenDistanceKm)];
+
+        int32 numEffLitersPerKm = data[uint(BaselineParamTypes.NumEffLitersPerKm)];
+        int32 denEffLitersPerKm = data[uint(BaselineParamTypes.DenEffLitersPerKm)];
+        int32 numEmissionsFactMetricTonsCO2PerLiter = data[uint(BaselineParamTypes.NumEmissionsFactMetricTonsCO2PerLiter)];
+        int32 denEmissionsFactMetricTonsCO2PerLiter = data[uint(BaselineParamTypes.DenEmissionsFactMetricTonsCO2PerLiter)];
+
+        /* TODO: Validate inputs
+        require(_isValidEff(effLitersPerKm));
+        require(_isValidEmissionsFact(emissionsFactMetricTonsCO2PerLiter));
+        */
+
+        int32 n = numDistanceKm.mul(numEffLitersPerKm).mul(numEmissionsFactMetricTonsCO2PerLiter);
+        int32 d = denDistanceKm.mul(denEffLitersPerKm).mul(denEmissionsFactMetricTonsCO2PerLiter);
+
+        return n.div(d);
+
+    }
+
+    function _baselineEmissionsElectric(int32[32] data) private pure returns (int32) {
+        // TODO: parse and compute...
         // enum VehicleType PEV Electric
         // Electric efficiency (kWh/km) = W_c
         // Electricity generation GHG emission factor corresponding to project community area
@@ -35,9 +73,8 @@ contract RideshareBaseline is EnumVehicleTypes, IEmissions {
         return 0;
     }
 
-    function _baselineEmissionsHybrid(bytes32 data) private pure
-        returns (uint256) { // isValidHybridBaseline(data)
-
+    function _baselineEmissionsHybrid(int32[32] data) private pure returns (int32) {
+        // TODO: parse and compute...
         // enum VehicleType PHEV / Hybrid
         // max(0, D_i-R_c)*V_c*EF_f + min(D_i, R_c)*W_c*GE_p
         // R_c = vehicle all electric range (km)
@@ -48,53 +85,6 @@ contract RideshareBaseline is EnumVehicleTypes, IEmissions {
         // EF_f = GHG emission factor of fuel used by vehicle (tCO2e/liter)
 
         return 0;
-    } */
-
-    function calculate(int64[16] data) external view returns (int64) {
-
-        int64 d;
-        int64 eff;
-        int64 emissions;
-
-        (d, eff, emissions) = (data[0], data[1], data[2]);
-
-        return _baselineEmissionsFossilFuel(d, eff, emissions);
-        
-        // return 0;
-        // uint256 vehicleType,
-        // require(isValidVehicleType(vehicleType));
-        /* VehicleTypes v = VehicleTypes(vehicleType);
-        if (v == VehicleTypes.FossilFuelVehicle) {
-            return _baselineEmissionsFossilFuel(data);
-        } else if (v == VehicleTypes.ElectricVehicle) {
-            return _baselineEmissionsElectric(data);
-        } else {
-            return _baselineEmissionsHybrid(data);
-        } */
-
-        // baseline formula -- has a require(isAdditional())
-        //    doees the person have a car?
-        //    how frequently do they use that car? HHI arguement
-        //    keep trakc of number of ride shares, how many miles do they commute a year?
-        //    will only work if they register their car, so you can keep track of commute counts?
-        // /  we have to determine if they use that to commute the majority of the time
-        //    what about being over median ratio of rideshare miles / distance miles
-        // how do you prove cyclic activity? if same people ride share?
-        //   don't you need a max miles per day in additinality criteria?
-        //   if you have the choice to rideshare or not when traveling and hyou choose to
-        //   rideshare isn't it already additional? if you have a max alloc?
-        //
-        //   one the way traveling vs out of way traveling
-        //   if on the way easy to divide, if out of the way, gotta take into account
-        //   route... need to know distance each would cover... and what car would be used
-        //
-        //   since the 'what car would be used' is kind of a stochastic / random
-        //   take the citites average efficiency, basically how many FFV, what type, etc.
-        //
-        //   baseline is sigma distance that would've been traveled * average emissions factor per participant
-        //   pe is actual distance times actual (require pe_distance < sigma )
-        //   le - change in average emissions factor
-
     }
 
 }
