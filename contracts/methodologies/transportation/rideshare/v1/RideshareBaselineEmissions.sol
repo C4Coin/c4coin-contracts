@@ -1,70 +1,52 @@
 pragma solidity 0.4.24;
 
+import "../../interfaces/IEmissions.sol";
 import "./EnumVehicleTypes.sol";
-import "../../../interfaces/IEmissions.sol";
 import "../../../libraries/SignedSafeMath.sol";
 
 
-contract RideshareBaseline is EnumVehicleTypes, IEmissions {
+contract RideshareBaseline is IEmissions {
 
-    using SignedSafeMath for int32;
-
-    enum BaselineParamTypes {
-        NumVehicleType,
-        DenVehicleType,
-        NumDistanceKm,
-        DenDistanceKm,
-        NumEffLitersPerKm,
-        DenEffLitersPerKm,
-        NumEmissionsFactMetricTonsCO2PerLiter,
-        DenEmissionsFactMetricTonsCO2PerLiter
+    modifier isValidFossilFuelBaseline(bytes data) {
+        // how do we verify?
+        _;
     }
 
-    function calculate(int32[32] data) external view returns (int32 res) {
-
-        VehicleTypes v = VehicleTypes(data[uint(BaselineParamTypes.NumVehicleType)]);
-
-        if (v == VehicleTypes.FossilFuelVehicle) {
-            res = _baselineEmissionsFossilFuel(data);
-        } else if (v == VehicleTypes.ElectricVehicle) {
-            // res = _baselineEmissionsElectric(data);
-            return 0;
-        } else if (v == VehicleTypes.HybridVehicle) {
-            // res =  _baselineEmissionsHybrid(data);
-            return 0;
-        } else {
-            revert(); // TODO: Restructure this branching
-        }
-
+    modifier isValidElectricBaseline(bytes data) {
+        // how do we verify?
+        _;
     }
 
-    function _baselineEmissionsFossilFuel(int32[32] data) private pure returns (int32) {
+    modifier isValidHybridBaseline(bytes data) {
+        // how do we verify?
+        _;
+    }
 
-        int32 numDistanceKm = data[uint(BaselineParamTypes.NumDistanceKm)];
-        require(numDistanceKm >= 0);
-        require(numDistanceKm <= 1000);
-
-        int32 denDistanceKm = data[uint(BaselineParamTypes.DenDistanceKm)];
-
-        int32 numEffLitersPerKm = data[uint(BaselineParamTypes.NumEffLitersPerKm)];
-        int32 denEffLitersPerKm = data[uint(BaselineParamTypes.DenEffLitersPerKm)];
-        int32 numEmissionsFactMetricTonsCO2PerLiter = data[uint(BaselineParamTypes.NumEmissionsFactMetricTonsCO2PerLiter)];
-        int32 denEmissionsFactMetricTonsCO2PerLiter = data[uint(BaselineParamTypes.DenEmissionsFactMetricTonsCO2PerLiter)];
+    function emissionsFossilFuel(
+        uint256 D_k,  // Distance driven in km
+        uint256 dD_k,
+        uint256 EL_k, // Efficiency liters per km
+        uint256 dEL_k,
+        uint256 EC_l, // Emissions factor metric tons co2 per liter
+        uint256 dEC_l
+    ) private pure isValidFossilFuelBaseline(data) returns (uint256) {
 
         /* TODO: Validate inputs
         require(_isValidEff(effLitersPerKm));
         require(_isValidEmissionsFact(emissionsFactMetricTonsCO2PerLiter));
         */
 
-        int32 n = numDistanceKm.mul(numEffLitersPerKm).mul(numEmissionsFactMetricTonsCO2PerLiter);
-        int32 d = denDistanceKm.mul(denEffLitersPerKm).mul(denEmissionsFactMetricTonsCO2PerLiter);
+        uint256 n = D_k.mul(EL_k).mul(EC_l);
+        uint256 d = dD_k.mul(dEL_k).mul(dEC_l);
 
         return n.div(d);
-
     }
 
-    function _baselineEmissionsElectric(int32[32] data) private pure returns (int32) {
-        // TODO: parse and compute...
+    function emissionsElectric(
+        uint256 W_c,
+        uint256 GE_p
+    ) private pure isValidElectricBaseline(data) returns (uint256) {
+
         // enum VehicleType PEV Electric
         // Electric efficiency (kWh/km) = W_c
         // Electricity generation GHG emission factor corresponding to project community area
@@ -73,8 +55,15 @@ contract RideshareBaseline is EnumVehicleTypes, IEmissions {
         return 0;
     }
 
-    function _baselineEmissionsHybrid(int32[32] data) private pure returns (int32) {
-        // TODO: parse and compute...
+    function emissionsHybrid(
+        uint256 D_i,
+        uint256 R_c,
+        uint256 W_c,
+        uint256 GE_p,
+        uint256 V_c,
+        uint256 EF_f
+    ) external pure isValidHybridBaseline(data) returns (uint256) {
+
         // enum VehicleType PHEV / Hybrid
         // max(0, D_i-R_c)*V_c*EF_f + min(D_i, R_c)*W_c*GE_p
         // R_c = vehicle all electric range (km)
@@ -87,4 +76,26 @@ contract RideshareBaseline is EnumVehicleTypes, IEmissions {
         return 0;
     }
 
+    // baseline formula -- has a require(isAdditional())
+    //    doees the person have a car?
+    //    how frequently do they use that car? HHI arguement
+    //    keep trakc of number of ride shares, how many miles do they commute a year?
+    //    will only work if they register their car, so you can keep track of commute counts?
+    // /  we have to determine if they use that to commute the majority of the time
+    //    what about being over median ratio of rideshare miles / distance miles
+    // how do you prove cyclic activity? if same people ride share?
+    //   don't you need a max miles per day in additinality criteria?
+    //   if you have the choice to rideshare or not when traveling and hyou choose to
+    //   rideshare isn't it already additional? if you have a max alloc?
+    //
+    //   one the way traveling vs out of way traveling
+    //   if on the way easy to divide, if out of the way, gotta take into account
+    //   route... need to know distance each would cover... and what car would be used
+    //
+    //   since the 'what car would be used' is kind of a stochastic / random
+    //   take the citites average efficiency, basically how many FFV, what type, etc.
+    //
+    //   baseline is sigma distance that would've been traveled * average emissions factor per participant
+    //   pe is actual distance times actual (require pe_distance < sigma )
+    //   le - change in average emissions factor
 }
