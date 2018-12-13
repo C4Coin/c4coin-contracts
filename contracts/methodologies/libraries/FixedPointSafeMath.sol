@@ -2,9 +2,11 @@ pragma solidity ^0.4.24;
 
 import "./SignedSafeMath.sol";
 
+
 /**
  * @title FixedPointSafeMath
- * @dev Math operations on 64-bit fixed point with safety checks that throw on error.
+ * @dev Math operations on 64-bit fixed point (2x32 bit tuple)
+ * with safety checks that throw on error.
  */
 library FixedPointSafeMath {
     using SignedSafeMath for int32;
@@ -37,7 +39,7 @@ library FixedPointSafeMath {
   */
   function add(int32 a_num, int32 a_den, int32 b_num, int32 b_den) internal pure returns (int32 c_num, int32 c_den) {
       c_num = a_num.add(b_num);
-      c_den = a_den.add(b_den); 
+      c_den = a_den.add(b_den);
       return (c_num, c_den);
   }
 }
