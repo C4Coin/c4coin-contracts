@@ -1,12 +1,15 @@
 pragma solidity 0.4.24;
 
-import "../../interfaces/IEmissions.sol";
+import "../../../interfaces/IEmissions.sol";
 import "./EnumVehicleTypes.sol";
+import "../../../libraries/SignedSafeMath.sol";
 
 
 contract RideshareProjectEmissions is IEmissions {
 
-    function projectEmissions(bytes data) public pure returns (uint256) {
+    using SignedSafeMath for int32;
+
+    function calculate(int32[32] data) external view returns (int32) {
         // uint256 vehicleType,
 
         // project emissions formula
