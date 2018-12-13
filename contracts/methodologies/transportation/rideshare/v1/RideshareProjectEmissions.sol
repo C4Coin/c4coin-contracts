@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "../../interfaces/IEmissions.sol";
+import "../../../interfaces/IEmissions.sol";
 import "./EnumVehicleTypes.sol";
 
 

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "../abstract/EmissionsReduction.sol";
+import "../../../abstract/EmissionsReduction.sol";
 import "./EnumVehicleTypes.sol";
 
 

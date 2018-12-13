@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;
 
 interface IEmissions {
 
-    function calculate(bytes data) external returns (uint256);
+    // Need 64 because of numerator & denomenator
+    function calculate(int32[64] data) external view returns (uint256);
 
 }

@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
-import "../../interfaces/IEmissions.sol";
+import "../../../interfaces/IEmissions.sol";
 import "./EnumVehicleTypes.sol";
 
 
-contract RideshareBaseline is IEmissions {
+contract RideshareBaseline is EnumVehicleTypes, IEmissions {
 
     modifier isValidFossilFuelBaseline(bytes data) {
         // how do we verify?
@@ -25,7 +25,7 @@ contract RideshareBaseline is IEmissions {
         uint32 distance_km,
         uint32 efficiency_liters_per_km,
         uint32 emissions_factor_metric_tons_co2_per_liter) private pure
-        isValidFossilFuelBaseline(data) returns (uint256) {
+        returns (uint256) { // isValidFossilFuelBaseline(data)
 
         // fixed point multiply...
 
@@ -33,7 +33,7 @@ contract RideshareBaseline is IEmissions {
     }
 
     function _baselineEmissionsElectric(bytes32 data) private pure
-        isValidElectricBaseline(data) returns (uint256) {
+        returns (uint256) { // isValidElectricBaseline(data)
 
         // enum VehicleType PEV Electric
         // Electric efficiency (kWh/km) = W_c
@@ -44,7 +44,7 @@ contract RideshareBaseline is IEmissions {
     }
 
     function _baselineEmissionsHybrid(bytes32 data) private pure
-        isValidHybridBaseline(data) returns (uint256) {
+        returns (uint256) { // isValidHybridBaseline(data)
 
         // enum VehicleType PHEV / Hybrid
         // max(0, D_i-R_c)*V_c*EF_f + min(D_i, R_c)*W_c*GE_p
@@ -58,18 +58,18 @@ contract RideshareBaseline is IEmissions {
         return 0;
     }
 
-    function baselineEmissions(bytes data) public pure returns (uint256) {
-
+    function calculate(int32[64] data) external view returns (uint256) {
+        return 0;
         // uint256 vehicleType,
         // require(isValidVehicleType(vehicleType));
-        VehicleTypes v = VehicleTypes(vehicleType);
+        /* VehicleTypes v = VehicleTypes(vehicleType);
         if (v == VehicleTypes.FossilFuelVehicle) {
             return _baselineEmissionsFossilFuel(data);
         } else if (v == VehicleTypes.ElectricVehicle) {
             return _baselineEmissionsElectric(data);
         } else {
             return _baselineEmissionsHybrid(data);
-        }
+        } */
 
         // baseline formula -- has a require(isAdditional())
         //    doees the person have a car?
