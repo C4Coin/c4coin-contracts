@@ -10,12 +10,12 @@ interface IEmissions {
         uint256 dEL_k,
         uint256 EC_l, // Emissions factor metric tons co2 per liter
         uint256 dEC_l
-    ) external pure isValidFossilFuelBaseline(data) returns (uint256);
+    ) external pure returns (uint256);
 
     function emissionsElectric(
         uint256 W_c,
         uint256 GE_p
-    ) external pure isValidElectricBaseline(data) returns (uint256);
+    ) external pure returns (uint256);
 
     function emissionsHybrid(
         uint256 D_i,
@@ -24,6 +24,6 @@ interface IEmissions {
         uint256 GE_p,
         uint256 V_c,
         uint256 EF_f
-    ) external pure isValidHybridBaseline(data) returns (uint256);
+    ) external pure returns (uint256);
 
 }

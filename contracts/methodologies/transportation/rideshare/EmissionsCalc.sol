@@ -1,8 +1,10 @@
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract EmissionsCalc {
+    using SafeMath for uint256;
+
     // Reductions recorded but not yet minted as co2kn
-    private uint256 unclaimedOffset = 0;
+    uint256 private unclaimedOffset = 0;
 
     function claimOffset () external returns (uint256) {
         uint256 tmp = unclaimedOffset;
@@ -11,6 +13,9 @@ contract EmissionsCalc {
     }
 
 
+    /*
+       Functions to Record Emissions
+    */
 
     function emissionsFossilFuel(
         uint256 D_k,  // Distance driven in km
@@ -19,7 +24,7 @@ contract EmissionsCalc {
         uint256 dEL_k,
         uint256 EC_l, // Emissions factor metric tons co2 per liter
         uint256 dEC_l
-    ) private pure isValidFossilFuelBaseline(data) returns (uint256) {
+    ) private pure returns (uint256) {
 
         /* TODO: Validate inputs
         require(_isValidEff(effLitersPerKm));
@@ -35,7 +40,7 @@ contract EmissionsCalc {
     function emissionsElectric(
         uint256 W_c,
         uint256 GE_p
-    ) private pure isValidElectricBaseline(data) returns (uint256) {
+    ) private pure returns (uint256) {
 
         // enum VehicleType PEV Electric
         // Electric efficiency (kWh/km) = W_c
@@ -52,7 +57,7 @@ contract EmissionsCalc {
         uint256 GE_p,
         uint256 V_c,
         uint256 EF_f
-    ) external pure isValidHybridBaseline(data) returns (uint256) {
+    ) external pure returns (uint256) {
 
         // enum VehicleType PHEV / Hybrid
         // max(0, D_i-R_c)*V_c*EF_f + min(D_i, R_c)*W_c*GE_p
