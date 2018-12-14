@@ -18,12 +18,9 @@ contract EmissionsCalc {
     */
 
     function emissionsFossilFuel(
-        uint256 D_k,  // Distance driven in km
-        uint256 dD_k,
-        uint256 EL_k, // Efficiency liters per km
-        uint256 dEL_k,
-        uint256 EC_l, // Emissions factor metric tons co2 per liter
-        uint256 dEC_l
+        uint256 distance,        // Distance driven in km
+        uint256 efficiency,      // Efficiency liters per km
+        uint256 emissionsFactor, // Emissions factor metric tons co2 per liter
     ) private pure returns (uint256) {
 
         /* TODO: Validate inputs
@@ -31,15 +28,12 @@ contract EmissionsCalc {
         require(_isValidEmissionsFact(emissionsFactMetricTonsCO2PerLiter));
         */
 
-        uint256 n = D_k.mul(EL_k).mul(EC_l);
-        uint256 d = dD_k.mul(dEL_k).mul(dEC_l);
-
-        return n.div(d);
+        return distance.mul(efficiency).mul(emissionsFactor);
     }
 
     function emissionsElectric(
-        uint256 W_c,
-        uint256 GE_p
+        uint256 electricEfficiency,
+        uint256 electricityGenerationEmmisions
     ) private pure returns (uint256) {
 
         // enum VehicleType PEV Electric
@@ -51,12 +45,12 @@ contract EmissionsCalc {
     }
 
     function emissionsHybrid(
-        uint256 D_i,
-        uint256 R_c,
-        uint256 W_c,
-        uint256 GE_p,
-        uint256 V_c,
-        uint256 EF_f
+        uint256 distance,
+        uint256 allElectricRange,
+        uint256 electricEfficiency,
+        uint256 electricityGenerationEmmisions,
+        uint256 fossilFuelEfficiency,
+        uint256 emissionsFactor
     ) external pure returns (uint256) {
 
         // enum VehicleType PHEV / Hybrid
