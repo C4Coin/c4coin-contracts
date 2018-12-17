@@ -6,6 +6,7 @@ contract EmissionsCalc {
     // Reductions recorded but not yet minted as co2kn
     uint256 private unclaimedOffset = 0;
 
+    // TODO: Only project contract can call this
     function claimOffset () external returns (uint256) {
         uint256 tmp = unclaimedOffset;
         unclaimedOffset = 0; // Reset
@@ -29,7 +30,7 @@ contract EmissionsCalc {
         */
 
         uint256 offset = distance.mul(efficiency).mul(emissionsFactor);
-        unclaimedOffset.add(offset);
+        unclaimedOffset = unclaimedOffset.add(offset);
         return offset;
         //return distance.mul(efficiency).mul(emissionsFactor);
     }

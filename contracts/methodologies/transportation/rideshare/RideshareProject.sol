@@ -6,7 +6,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract RideshareProject is Ownable {
     using SafeMath for uint256;
 
-    RideshareToken co2kn;
+    RideshareToken public co2kn;
     EmissionsCalc public ec;
     uint256 baseline; // Baseline emissions computed off-chain
 
@@ -14,12 +14,15 @@ contract RideshareProject is Ownable {
     // TODO: Should take an owner as input, not implicitly msg.sender as Ownable forces
     constructor (
         //address _owner,
-        RideshareToken _co2kn,
+        //RideshareToken _co2kn,
         EmissionsCalc _ec,
-        uint256 _baseline
+        uint256 _baseline,
+        uint256 _tokenCap
     ) {
         //owner = _owner;
-        co2kn = _co2kn;
+        //co2kn = _co2kn;
+        baseline = _baseline;
+        co2kn = new RideshareToken(_tokenCap);
         ec    = _ec;
     }
 
