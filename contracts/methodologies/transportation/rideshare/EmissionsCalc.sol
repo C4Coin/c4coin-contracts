@@ -20,21 +20,24 @@ contract EmissionsCalc {
     function emissionsFossilFuel(
         uint256 distance,        // Distance driven in km
         uint256 efficiency,      // Efficiency liters per km
-        uint256 emissionsFactor, // Emissions factor metric tons co2 per liter
-    ) private pure returns (uint256) {
+        uint256 emissionsFactor // Emissions factor metric tons co2 per liter
+    ) external returns (uint256) {
 
         /* TODO: Validate inputs
         require(_isValidEff(effLitersPerKm));
         require(_isValidEmissionsFact(emissionsFactMetricTonsCO2PerLiter));
         */
 
-        return distance.mul(efficiency).mul(emissionsFactor);
+        uint256 offset = distance.mul(efficiency).mul(emissionsFactor);
+        unclaimedOffset.add(offset);
+        return offset;
+        //return distance.mul(efficiency).mul(emissionsFactor);
     }
 
     function emissionsElectric(
         uint256 electricEfficiency,
         uint256 electricityGenerationEmmisions
-    ) private pure returns (uint256) {
+    ) external pure returns (uint256) {
 
         // enum VehicleType PEV Electric
         // Electric efficiency (kWh/km) = W_c

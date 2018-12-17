@@ -7,7 +7,7 @@ contract RideshareProject is Ownable {
     using SafeMath for uint256;
 
     RideshareToken co2kn;
-    EmissionsCalc ec;
+    EmissionsCalc public ec;
     uint256 baseline; // Baseline emissions computed off-chain
 
     // TODO: Make this an initializable fn for ZOS
