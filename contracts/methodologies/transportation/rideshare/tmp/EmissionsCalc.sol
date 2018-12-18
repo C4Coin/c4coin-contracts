@@ -1,5 +1,6 @@
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 contract EmissionsCalc {
     using SafeMath for uint256;
 
@@ -20,7 +21,7 @@ contract EmissionsCalc {
     function emissionsFossilFuel(
         uint256 distance,        // Distance driven in km
         uint256 efficiency,      // Efficiency liters per km
-        uint256 emissionsFactor, // Emissions factor metric tons co2 per liter
+        uint256 emissionsFactor // Emissions factor metric tons co2 per liter
     ) private pure returns (uint256) {
 
         /* TODO: Validate inputs
