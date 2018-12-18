@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity ^0.4.24;
 
 import "./libraries/EmissionsLib.sol";
 
@@ -7,6 +7,7 @@ contract RideshareBaseline {
 
     mapping (address => bool) public baselineCriteria;
     mapping (address => uint256) public baselineEmissions;
+
 
     uint256 public RIDEPOOL_RATIO = 36 ether;
 
