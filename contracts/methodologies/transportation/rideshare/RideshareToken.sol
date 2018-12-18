@@ -6,4 +6,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20Burnable.sol";
 
 
 contract RideshareToken is ERC20Capped, ERC20Burnable {
+    constructor (uint256 cap) ERC20Capped(cap) {
+    }
 }
