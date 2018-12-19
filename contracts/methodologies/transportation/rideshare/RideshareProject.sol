@@ -1,36 +1,51 @@
-import "./RideshareToken.sol";
-import "./EmissionsCalc.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+pragma solidity ^0.4.24;
+
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../../abstract/EmissionsStorage.sol";
+import "./RideshareToken.sol";
+
 
 contract RideshareProject is Ownable {
     using SafeMath for uint256;
 
-    RideshareToken public co2kn;
-    EmissionsCalc public ec;
-    uint256 baseline; // Baseline emissions computed off-chain
+    RideshareToken co2kn;
 
+    EmissionsStorage baseline;
+    EmissionsStorage project;
+
+    // Possible to remove all constructor dependencies
+    // and initialize all with new...
     // TODO: Make this an initializable fn for ZOS
     // TODO: Should take an owner as input, not implicitly msg.sender as Ownable forces
     constructor (
-        //address _owner,
-        //RideshareToken _co2kn,
-        EmissionsCalc _ec,
-        uint256 _baseline,
-        uint256 _tokenCap
-    ) {
-        //owner = _owner;
-        //co2kn = _co2kn;
-        baseline = _baseline;
+        EmissionsStorage _baseline,
+        EmissionsStorage _project
+    ) public {
+
         co2kn = new RideshareToken(_tokenCap);
-        ec    = _ec;
+        baseline = _baseline;
+        project = _project;
+
     }
 
-    function mintFromOffset(address _to) {
-        // Get amount to mint from offset records
-        uint256 emissions = ec.claimOffset();
-        uint256 co2kns = baseline.sub(emissions); //.sub(leakage);
+    // TODO: Initialize and set additionality storage
+    // function Initialize(...)
 
-        co2kn.mint(_to, co2kns);
+    // TODO: need a Complete() / Finalize() to finish project before mint
+
+    // TODO: in future add onlyAdditional modifier and onlyProjectcomplete modifier
+    function mint(address _to) public { // onlyAdditional() // onlyProjectComplete
+
+        // Get baseline, project and leakage emissions
+        uint256 baselineEmissions = baseline.emissions(_to);
+        uint256 projectEmissions = project.emissions(_to);
+
+        // Verify emissions were reduced
+        require(baselineEmissions > projectEmissions);
+
+        // Calculate emissions reductions
+        uint256 emissionReductions = baselineEmissions.sub(projectEmissions);
+
+        co2kn.mint(_to, emissionReductions);
     }
 }
