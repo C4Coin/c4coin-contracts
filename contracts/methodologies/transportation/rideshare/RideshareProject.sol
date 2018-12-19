@@ -18,12 +18,11 @@ contract RideshareProject is Ownable {
     // TODO: Make this an initializable fn for ZOS
     // TODO: Should take an owner as input, not implicitly msg.sender as Ownable forces
     constructor (
-        RideshareToken _co2kn, // change this to an interface
         EmissionsStorage _baseline,
         EmissionsStorage _project
     ) public {
 
-        co2kn = _co2kn;
+        co2kn = new RideshareToken(_tokenCap);
         baseline = _baseline;
         project = _project;
 
