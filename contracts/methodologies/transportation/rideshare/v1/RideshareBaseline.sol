@@ -1,17 +1,20 @@
 pragma solidity ^0.4.24;
 
-import "./libraries/EmissionsLib.sol";
 import "../../../libraries/FixedPointSafeMath.sol";
+import "./libraries/BaselineLib.sol";
+import "./libraries/EmissionsLib.sol";
 
 
+/**
+ * @title RideshareBaseline
+ * @dev This contract stores baseline state
+ */
 contract RideshareBaseline {
+
     using FixedPointSafeMath for uint256;
 
     mapping (address => bool) public baselineCriteria;
     mapping (address => uint256) public baselineEmissions;
-
-
-    uint256 public RIDEPOOL_RATIO = 36 ether;
 
     /**
     * @dev Update baseline criteria for a rider
@@ -22,7 +25,7 @@ contract RideshareBaseline {
     * @param numCommutes .
     * @return Whether the baseline criteria is met
     */
-    function updateBaselineCriteria(
+    function setBaselineCriteria(
         address rider,
         uint256 alternativeTransportTime,
         uint256 rideshareTime,
@@ -31,13 +34,12 @@ contract RideshareBaseline {
 
         require(rider != address(0));
 
-        if (alternativeTransportTime + 15 minutes <= rideshareTime) {
-            baselineCriteria[rider] = false;
-        } else if ( numRidepools.div(numCommutes) < RIDEPOOL_RATIO) {
-            baselineCriteria[rider] = false;
-        } else {
-            baselineCriteria[rider] = true;
-        }
+        baselineCriteria[rider] = BaselineLib.isValidBaseline(
+            alternativeTransportTime,
+            rideshareTime,
+            numRidepools,
+            numCommutes
+        );
 
         return baselineCriteria[rider];
 
@@ -51,7 +53,7 @@ contract RideshareBaseline {
      * @param electricityGenerationEmissions Electricity gen. emissions corresponding to project area (tCO2/kWH)
      * @return Emissions produced in ride (tCO2)
      */
-    function electric(
+    function setBaselineElectric(
         address rider,
         uint256 distance,
         uint256 electricEfficiency,
@@ -78,7 +80,7 @@ contract RideshareBaseline {
      * @param emissionsFactor Emissions factor used for vehicle (tCO2/L)
      * @return Emissions produced in ride (tCO2)
      */
-    function fossilFuel(
+    function setBaselineFossilFuel(
         address rider,
         uint256 distance,
         uint256 fuelEfficiency,
@@ -109,7 +111,7 @@ contract RideshareBaseline {
      * @param electricRange Vehicle electric range (km)
      * @return Emissions produced in ride (tCO2)
      */
-    function hybrid(
+    function setBaselineHybrid(
         address rider,
         uint256 distance,
         uint256 fuelEfficiency,
@@ -133,4 +135,5 @@ contract RideshareBaseline {
         return baselineEmissions[rider];
 
     }
+
 }
