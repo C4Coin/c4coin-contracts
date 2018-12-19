@@ -4,10 +4,10 @@ import "../../../../libraries/FixedPointSafeMath.sol";
 
 
 /**
- * @title MarketLib
- * @dev This library helps with HHI and dominant market calculations
+ * @title AdditionalityLib
+ * @dev This library helps with HHI and dominant market calculations for rideshare additionality
  */
-library MarketLib {
+library AdditionalityLib {
 
     using FixedPointSafeMath for uint256;
 

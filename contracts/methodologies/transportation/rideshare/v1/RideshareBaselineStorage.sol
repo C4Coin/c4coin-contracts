@@ -42,12 +42,14 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
     /**
      * @dev Calculates emissions given distance and electric vehicle parameters
      * @param rider Address of rider
+     * @param rideCount Number of times this ride is done per baseline interval
      * @param distance Distance traveled by vehicle with occupants (km)
      * @param electricEfficiency Vehicle electric efficiency (kWh/km)
      * @param electricityGenerationEmissions Electricity gen. emissions corresponding to project area (tCO2/kWH)
      */
     function setElectric(
         address rider,
+        uint256 rideCount,
         uint256 distance,
         uint256 electricEfficiency,
         uint256 electricityGenerationEmissions) onlyValid(rider) public {
@@ -55,7 +57,7 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
         emissions[rider] = EmissionsLib.electric(
             distance,
             electricEfficiency,
-            electricityGenerationEmissions);
+            electricityGenerationEmissions).mul(rideCount);
 
         validity[rider] = false;
 
@@ -64,12 +66,14 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
     /**
      * @dev Calculates emissions given distance and fossil-fuel parameters
      * @param rider Address of rider
+     * @param rideCount Number of times this ride is done per baseline interval
      * @param distance Distance traveled by vehicle with occupants (km)
      * @param fuelEfficiency Vehicle fossil fuel efficiency (L/km)
      * @param emissionsFactor Emissions factor used for vehicle (tCO2/L)
      */
     function setFossilFuel(
         address rider,
+        uint256 rideCount,
         uint256 distance,
         uint256 fuelEfficiency,
         uint256 emissionsFactor) onlyValid(rider) public {
@@ -77,7 +81,7 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
         emissions[rider] = EmissionsLib.fossilFuel(
             distance,
             fuelEfficiency,
-            emissionsFactor);
+            emissionsFactor).mul(rideCount);
 
         validity[rider] = false;
 
@@ -86,6 +90,7 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
     /**
      * @dev Calculates emissions given distance and fossil-fuel & electric parameters
      * @param rider Address of rider
+     * @param rideCount Number of times this ride is done per baseline interval
      * @param distance Distance traveled by vehicle with occupants (km)
      * @param fuelEfficiency Vehicle fossil fuel efficiency (L/km)
      * @param emissionsFactor Emissions factor used for vehicle (tCO2/L)
@@ -95,6 +100,7 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
      */
     function setHybrid(
         address rider,
+        uint256 rideCount,
         uint256 distance,
         uint256 fuelEfficiency,
         uint256 emissionsFactor,
@@ -108,7 +114,7 @@ contract RideshareBaselineStorage is EmissionsStorage, ValidityStorage {
             emissionsFactor,
             electricEfficiency,
             electricityGenerationEmissions,
-            electricRange);
+            electricRange).mul(rideCount);
 
         validity[rider] = false;
 

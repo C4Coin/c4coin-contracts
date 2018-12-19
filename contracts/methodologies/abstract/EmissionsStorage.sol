@@ -8,9 +8,5 @@ pragma solidity ^0.4.24;
 contract EmissionsStorage {
 
     mapping (address => uint256) public emissions;
-
-    modifier onlyValid(address a) {
-        require(a != address(0));
-        _;
-    }
+    
 }

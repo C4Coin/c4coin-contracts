@@ -9,9 +9,9 @@ contract RideshareProject is Ownable {
     using SafeMath for uint256;
 
     RideshareToken co2kn;
+
     EmissionsStorage baseline;
     EmissionsStorage project;
-    /* EmissionsStorage leakage; */
 
     // Possible to remove all constructor dependencies
     // and initialize all with new...
@@ -32,20 +32,20 @@ contract RideshareProject is Ownable {
     // TODO: Initialize and set additionality storage
     // function Initialize(...)
 
-    // TODO: in future add onlyAdditional modifier
-    function mint(address _to) public { // onlyAdditional()
+    // TODO: need a Complete() / Finalize() to finish project before mint
+
+    // TODO: in future add onlyAdditional modifier and onlyProjectcomplete modifier
+    function mint(address _to) public { // onlyAdditional() // onlyProjectComplete
 
         // Get baseline, project and leakage emissions
         uint256 baselineEmissions = baseline.emissions(_to);
         uint256 projectEmissions = project.emissions(_to);
-        uint256 leakageEmissions = 0; // leakage.emissions[_to];
 
         // Verify emissions were reduced
-        require(baselineEmissions > projectEmissions + leakageEmissions);
-        require(projectEmissions > leakageEmissions);
+        require(baselineEmissions > projectEmissions);
 
         // Calculate emissions reductions
-        uint256 emissionReductions = baselineEmissions.sub(projectEmissions).sub(leakageEmissions);
+        uint256 emissionReductions = baselineEmissions.sub(projectEmissions);
 
         co2kn.mint(_to, emissionReductions);
     }
