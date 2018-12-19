@@ -16,7 +16,7 @@ library EmissionsLib {
      * @param distance Distance traveled by vehicle with occupants (km)
      * @param electricEfficiency Vehicle electric efficiency (kWh/km)
      * @param electricityGenerationEmissions Electricity gen. emissions corresponding to project area (tCO2/kWH)
-     * @returns Emissions produced in ride (tCO2)
+     * @return Emissions produced in ride (tCO2)
      */
      function electric(
          uint256 distance,
@@ -24,7 +24,7 @@ library EmissionsLib {
          uint256 electricityGenerationEmissions
      ) public pure returns (uint256) {
 
-         return distance.mul(vehicleElectricEfficiency).mul(electricityGenerationEmissions);
+         return distance.mul(electricEfficiency).mul(electricityGenerationEmissions);
 
      }
 
@@ -33,7 +33,7 @@ library EmissionsLib {
       * @param distance Distance traveled by vehicle with occupants (km)
       * @param fuelEfficiency Vehicle fossil fuel efficiency (L/km)
       * @param emissionsFactor Emissions factor used for vehicle (tCO2/L)
-      * @returns Emissions produced in ride (tCO2)
+      * @return Emissions produced in ride (tCO2)
       */
      function fossilFuel(
          uint256 distance,
@@ -41,7 +41,7 @@ library EmissionsLib {
          uint256 emissionsFactor
      ) public pure returns (uint256) {
 
-         return distance.mul(efficiency).mul(emissionsFactor);
+         return distance.mul(fuelEfficiency).mul(emissionsFactor);
 
      }
 
@@ -53,7 +53,7 @@ library EmissionsLib {
       * @param electricEfficiency Vehicle electric efficiency (kWh/km)
       * @param electricityGenerationEmissions Electricity gen. emissions corresponding to project area (tCO2/kWH)
       * @param electricRange Vehicle electric range (km)
-      * @returns Emissions produced in ride (tCO2)
+      * @return Emissions produced in ride (tCO2)
       */
      function hybrid(
          uint256 distance,
@@ -65,7 +65,7 @@ library EmissionsLib {
     ) public pure returns (uint256) {
 
          uint256 e = 0;
-         if (distance > vehicleElectricRange) {
+         if (distance > electricRange) {
              e += distance.sub(electricRange).mul(fuelEfficiency).mul(emissionsFactor);
              e += electricRange.mul(electricEfficiency).mul(electricityGenerationEmissions);
          } else {

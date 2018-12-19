@@ -1,9 +1,11 @@
 pragma solidity ^0.4.24;
 
 import "./libraries/EmissionsLib.sol";
+import "../../../libraries/FixedPointSafeMath.sol";
 
 
 contract RideshareBaseline {
+    using FixedPointSafeMath for uint256;
 
     mapping (address => bool) public baselineCriteria;
     mapping (address => uint256) public baselineEmissions;
@@ -12,13 +14,14 @@ contract RideshareBaseline {
     uint256 public RIDEPOOL_RATIO = 36 ether;
 
     /**
-     * @dev Update baseline criteria for a rider
-     * @param alternativeTransportTime  (km)
-     * @param rideshareTime
-     * @param numRidepools
-     * @param numCommutes
-     * @returns Whether the baseline criteria is met
-     */
+    * @dev Update baseline criteria for a rider
+    * @param rider .
+    * @param alternativeTransportTime  . (km)
+    * @param rideshareTime .
+    * @param numRidepools .
+    * @param numCommutes .
+    * @return Whether the baseline criteria is met
+    */
     function updateBaselineCriteria(
         address rider,
         uint256 alternativeTransportTime,
@@ -46,7 +49,7 @@ contract RideshareBaseline {
      * @param distance Distance traveled by vehicle with occupants (km)
      * @param electricEfficiency Vehicle electric efficiency (kWh/km)
      * @param electricityGenerationEmissions Electricity gen. emissions corresponding to project area (tCO2/kWH)
-     * @returns Emissions produced in ride (tCO2)
+     * @return Emissions produced in ride (tCO2)
      */
     function electric(
         address rider,
@@ -73,7 +76,7 @@ contract RideshareBaseline {
      * @param distance Distance traveled by vehicle with occupants (km)
      * @param fuelEfficiency Vehicle fossil fuel efficiency (L/km)
      * @param emissionsFactor Emissions factor used for vehicle (tCO2/L)
-     * @returns Emissions produced in ride (tCO2)
+     * @return Emissions produced in ride (tCO2)
      */
     function fossilFuel(
         address rider,
@@ -104,7 +107,7 @@ contract RideshareBaseline {
      * @param electricEfficiency Vehicle electric efficiency (kWh/km)
      * @param electricityGenerationEmissions Electricity gen. emissions corresponding to project area (tCO2/kWH)
      * @param electricRange Vehicle electric range (km)
-     * @returns Emissions produced in ride (tCO2)
+     * @return Emissions produced in ride (tCO2)
      */
     function hybrid(
         address rider,
