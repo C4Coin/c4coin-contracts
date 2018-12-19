@@ -21,7 +21,7 @@ library BaselineLib {
     * @param numCommutes .
     * @return Whether the baseline criteria is met
     */
-    function isValidBaseline(
+    function isValid(
         uint256 alternativeTransportTime,
         uint256 rideshareTime,
         uint256 numRidepools,

@@ -8,6 +8,7 @@ import "../../../../libraries/FixedPointSafeMath.sol";
  * @dev This library helps with HHI and dominant market calculations
  */
 library MarketLib {
+
     using FixedPointSafeMath for uint256;
 
     uint256 constant public DOMINANT_MARKET_HHI_MIN = 2500 ether;
