@@ -19,7 +19,8 @@ contract RideshareProject is Ownable {
     // TODO: Should take an owner as input, not implicitly msg.sender as Ownable forces
     constructor (
         EmissionsStorage _baseline,
-        EmissionsStorage _project
+        EmissionsStorage _project,
+        uint256 _tokenCap
     ) public {
 
         co2kn = new RideshareToken(_tokenCap);
